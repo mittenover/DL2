@@ -40,6 +40,12 @@ class DNN(DBN):
 
         return outputs
     
+    def cross_entropy(self, y_true, y_pred):
+        loss = []
+        for k in range(y_true.shape[0]):
+            loss.append(-np.sum([y_true[k,j] * np.log(y_pred[k,j]) for j in range(y_true.shape[1])]))
+        return loss
+    
     def retropropagation(self, X, y, nb_epochs, learning_rate, mini_batch_size, verbose=False):
 
         if verbose:
@@ -60,7 +66,26 @@ class DNN(DBN):
                 self.RBM_layers[-1].W -= learning_rate * outputs[-2].T @ outputs_diff / batch_size
                 self.RBM_layers[-1].b -= learning_rate * np.sum(outputs_diff, axis=0) / batch_size
 
+                for i in range(len(self.RBM_layers)-2, -1, -1):
+                    outputs_diff = (outputs_diff @ self.RBM_layers[i+1].W.T) * outputs[i+1] * (1 - outputs[i+1])
+                    self.RBM_layers[i].W -= learning_rate * outputs[i].T @ outputs_diff / batch_size
+                    self.RBM_layers[i].b -= learning_rate * np.sum(outputs_diff, axis=0) / batch_size
                 
+                loss+=self.cross_entropy(y_batch, outputs[-1])
+        
+            self.losses.append(np.mean(loss))
+            print(f"Epoch {i+1}/{nb_epochs}, loss: {np.mean(loss)}")
+        return self
+    
+    def test_DNN(self, X, y):
+        outputs = self.entree_sortie_reseau(X)
+        y_pred = np.argmax(outputs[-1], axis=1)
+        y_true = np.argmax(y, axis=1)
+        accuracy = np.mean(y_pred == y_true)
+        print(f"Accuracy: {accuracy}")
+        return accuracy
+
+
 
 
 
