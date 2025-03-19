@@ -37,17 +37,17 @@ def afficher_alpha_digit_random(data, nb_images=5):
     """
     nb_images = min(nb_images, data.shape[0])  # Limite au nombre d'images disponibles
     indices = np.random.choice(data.shape[0], nb_images, replace=False)
-    plt.figure(figsize=(nb_images * 2, 2))
-    
+    figure, axes = plt.subplots(1, nb_images, figsize=(10, 7))
     for i, idx in enumerate(indices):
-        plt.subplot(1, nb_images, i + 1)
-        plt.imshow(data[idx].reshape(20, 16), cmap="gray")
-        plt.axis("off")
-        plt.title(f"Image {idx + 1}")
-    
+        axe = axes[i]
+        axe.imshow(data[idx].reshape(20, 16), cmap="gray")
+        axe.set_xticks([])
+        axe.set_yticks([])
+        axe.set_title(f"Image {idx}")
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
     plt.show()
-
-
+    
 def import_model(filename: str) -> DNN:     # Retourner un objet de type DNN
     """
     param filename: chemin du fichier
