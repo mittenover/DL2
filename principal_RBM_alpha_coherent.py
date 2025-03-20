@@ -6,7 +6,7 @@ import copy
 
 class RBM:
     """Restricted Boltzmann Machine (RBM) class."""
-
+    
     def __init__(self, p, q):
         self.W = np.random.normal(0, 0.01, (p, q))
         self.b = np.zeros(q)
@@ -40,7 +40,7 @@ class RBM:
     
     def train_RBM(self, nb_epochs, learning_rate, mini_batch_size, X, verbose=False, step=30):   # verbose = True, affiche des messages sur la progression de l'entrainement
         """
-        Entraînement de la RBM par l'algorithme Contrastive-Divergence-1.
+        Entraînement de la RBM.
         Args:
             X (numpy.ndarray): Données d'entrée pour l'entraînement.
             learning_rate (float): Taux d'apprentissage.
@@ -49,18 +49,14 @@ class RBM:
             verbose (bool): Afficher les logs d'entraînement.
             step (int): Fréquence d'enregistrement des images reconstruites.
         """
-        X_copy = X.copy()
-        n = X_copy.shape[0]
+        n = X.shape[0]
         p = self.W.shape[0]
         q = self.W.shape[1]
-        self.nb_epochs = nb_epochs                  # recupération de ces valeurs pour l'analyse
-        self.learning_rate = learning_rate
-        self.mini_batch_size = mini_batch_size
 
         for epoch in range(nb_epochs):
-            np.random.shuffle(X_copy)
+            np.random.shuffle(X)
             for i in range(0, n, mini_batch_size):
-                X_batch = X_copy[i:min(i + mini_batch_size, n), :]
+                X_batch = X[i:min(i + mini_batch_size, n), :]
                 t_batch = X_batch.shape[0]
                 v_0 = copy.deepcopy(X_batch)
                 p_b_v_0 = self.entree_sortie_RBM(v_0)
@@ -88,31 +84,27 @@ class RBM:
                 random_idx = np.random.randint(0, n)                    # choisir une image différente
                 self.X_list.append(X[random_idx])
                 self.X_rec_list.append(X_rec[random_idx])
-                
-                self.epoch_RBM.append(f"Epoch{epoch + 1}/{nb_epochs}")
-                
+                self.epoch_RBM.append(f"Epoch{epoch + 1}/{nb_epochs}")  # sauvegarde du numéro d'epoch correspondant à l'image
                 error_selected = np.mean((X[random_idx] - X_rec[random_idx])**2)
                 self.errors_images.append(error_selected)               # sauvegarde de l'erreur de reconstruction de l'image sélectionnée
 
-                if verbose:
-                    print(f"Epoch {epoch + 1}/{nb_epochs}, erreur de reconstruction: {loss}")
+            if verbose:
+                print(f"Epoch {epoch + 1}/{nb_epochs}, erreur de reconstruction: {loss}")
 
         return self
     
     def generer_image_RBM(self, nb_images, nb_iter_gibbs):
-        """Génération d'images à partir du RBM."""
+        """Génératuin d'images à partir du RBM."""
         p = self.W.shape[0]
         q = self.W.shape[1]
-        figure, axes = plt.subplots(nb_images // 5, 5, figsize=(10, 2 * (nb_images // 5)))
         for i in range(nb_images):
             x_new = (np.random.rand(p) < 0.5) * 1   # créer un vecteur binaire aléatoire avec une distribution uniforme de 0 ou 1 
             for j in range(nb_iter_gibbs):
                 h = (np.random.rand(q) < self.entree_sortie_RBM(x_new)) * 1
-                x_new = (np.random.rand(p) < self.sortie_entree_RBM(h)) * 1
-            axe = axes[i // 5, i % 5]
-            axe.imshow(x_new.reshape(20, 16), cmap='gray')
-            axe.axis("off")
-        plt.show()
+                x_new = (np.random.rand(p) < self.sortie_entree_RBM(h) )* 1
+            plt.imshow(x_new.reshape(20,16), cmap='gray')
+            plt.show()
+        return self
     
     def generer_image_RBM_without_plot(self, nb_iter_gibbs):
         """Génère une image sans l'afficher (utile pour le DBN)."""
@@ -122,51 +114,17 @@ class RBM:
             x_new = (np.random.rand(self.W.shape[0]) < self.sortie_entree_RBM(h)) * 1
         return x_new
 
-    def afficher_image_RBM_vs_original(self):
+    def display_image_RBM_vs_original(self):
         """Affiche les images originales et reconstruites durant l'entraînement."""
         for i in range(len(self.epoch_RBM)):
             print(self.epoch_RBM[i])
-            figure, axes = plt.subplots(1, 2, figsize=(5, 3))
-            axes[0].imshow(self.X_list[i].reshape(20, 16), cmap="gray")
-            axes[0].axis("off")
-            axes[0].set_title(f"Original ", fontsize=8)
+            fig, ax = plt.subplots(1, 2, figsize=(5, 3))
+            ax[0].imshow(self.X_list[i].reshape(20, 16), cmap="gray")
+            ax[0].axis("off")
+            ax[0].set_title("Original", fontsize=8)
             
-            axes[1].imshow(self.X_rec_list[i].reshape(20, 16), cmap="gray")
-            axes[1].axis("off")
-            axes[1].set_title(f"Reconstruit (RMSE={self.errors_images[i]:.4f})", fontsize=8)
+            ax[1].imshow(self.X_rec_list[i].reshape(20, 16), cmap="gray")
+            ax[1].axis("off")
+            ax[1].set_title(f"Reconstruit (RMSE={self.errors_images[i]:.4f})", fontsize=8)
             
-            figure.tight_layout()
             plt.show()
-
-    
-    def analyse_RBM(self, nb_gibbs, nb_image=5, param_analysed="nb_epochs"):
-        """Affiche des images générées et une courbe de perte pour différents hyperparamètres."""
-        
-        p = self.W.shape[0]
-        q = self.W.shape[1]
-        figure = plt.figure(figsize=(nb_image * 2, 2))
-
-        for i in range(nb_image):
-            v = (np.random.rand(p) < 1 / 2) * 1
-            for j in range(nb_gibbs):
-                h = (np.random.rand(q) < self.entree_sortie_RBM(v)) * 1
-                v = (np.random.rand(p) < self.sortie_entree_RBM(h)) * 1
-
-            axe = plt.subplot2grid((1, nb_image), (i // nb_image, i % nb_image), fig=figure)
-            axe.imshow(np.reshape(v, (20, 16)), cmap="gray")
-            axe.axis("off")
-
-        if param_analysed == "nb_epochs": 
-            plt.title(f"Reconstruction ({param_analysed} = {self.nb_epochs})", fontsize=7, loc="left")
-
-        elif param_analysed == "learning_rate":
-            plt.title(f"Reconstruction ({param_analysed} = {self.learning_rate})", fontsize=7, loc="left")
-
-        elif param_analysed == "mini_batch_size":
-            plt.title(f"Reconstruction ({param_analysed} = {self.mini_batch_size})", fontsize=7, loc="left")
-        
-        elif param_analysed == "q":
-            plt.title(f"Reconstruction ({param_analysed} = {self.W.shape[1]})", fontsize=7, loc="left")
-
-        plt.tight_layout()
-        plt.show()
