@@ -122,7 +122,7 @@ class RBM:
             x_new = (np.random.rand(self.W.shape[0]) < self.sortie_entree_RBM(h)) * 1
         return x_new
 
-    def display_image_RBM_vs_original(self):
+    def afficher_image_RBM_vs_original(self):
         """Affiche les images originales et reconstruites durant l'entraînement."""
         for i in range(len(self.epoch_RBM)):
             print(self.epoch_RBM[i])
@@ -139,7 +139,7 @@ class RBM:
             plt.show()
 
     
-    def generate_for_analysis(self, nb_gibbs, nb_image=5, param_analysed="nb_epochs"):
+    def analyse_RBM(self, nb_gibbs, nb_image=5, param_analysed="nb_epochs"):
         """Affiche des images générées et une courbe de perte pour différents hyperparamètres."""
         
         p = self.W.shape[0]
