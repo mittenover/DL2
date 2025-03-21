@@ -1,8 +1,14 @@
 import pickle
+import os
+import urllib.request
+import gzip
+import shutil
 
 import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
+from mlxtend.data import loadlocal_mnist
+from sklearn.preprocessing import OneHotEncoder
 
 from principal_DNN_MNIST import DNN
 
@@ -26,6 +32,33 @@ def lire_alpha_digit(L):
         m = data['dat'][0][0].shape[0]*data['dat'][0][0].shape[1]
         X=np.concatenate(X).reshape((n,m))
         return X
+
+def lire_mnist(path="Data/"):
+    """
+    Charge les données de la base MNIST et les binarise.
+    Args:
+        path (str): Chemin du dossier contenant les fichiers MNIST.
+    Returns:
+        tuple: Tuple contenant les données d'entraînement et de test binarisées.
+    """
+    X_train, y_train = loadlocal_mnist(
+        images_path=path + "train-images.idx3-ubyte",
+        labels_path=path + "train-labels.idx1-ubyte",
+    )
+    X_test, y_test = loadlocal_mnist(
+        images_path=path + "t10k-images.idx3-ubyte",
+        labels_path=path + "t10k-labels.idx1-ubyte",
+    )
+
+    # Binarisation des données
+    X_train = (X_train >= 127).astype(int)
+    X_test = (X_test >= 127).astype(int)
+
+    encode = OneHotEncoder()
+    y_train = encode.fit_transform(y_train.reshape(-1, 1)).toarray()
+    y_test = encode.transform(y_test.reshape(-1, 1)).toarray()
+
+    return X_train, X_test, y_train, y_test
 
 def afficher_alpha_digit_random(data, nb_images=5):
     """
