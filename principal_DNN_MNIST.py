@@ -88,6 +88,9 @@ class DNN(DBN):
         outputs = self.entree_sortie_reseau(X)
         y_pred = np.argmax(outputs[-1], axis=1)
         y_true = np.argmax(y, axis=1)
-        accuracy = np.mean(y_pred == y_true)
-        print(f"Accuracy: {accuracy}")
-        return accuracy
+        # accuracy = np.mean(y_pred == y_true)
+        # print(f"Accuracy: {accuracy}")
+        # return accuracy
+        error_rate = np.mean(y_pred != y_true)
+        print(f"Error rate: {error_rate}")
+        return error_rate
