@@ -37,7 +37,7 @@ README.md
 
 ---
 
-## 🔍 Binary AlphaDigits Analysis
+## Binary AlphaDigits Analysis
 
 We implemented and tested RBMs and DBNs on the Binary AlphaDigits dataset (36×39 grayscale images, 20×16 pixels each).
 
@@ -52,7 +52,7 @@ We found DBNs outperform RBMs in generating distinct characters.
 
 ---
 
-## 🔢 MNIST Classification
+## MNIST Classification
 
 We evaluated the impact of pretraining on MNIST classification:
 
@@ -65,7 +65,7 @@ We evaluated the impact of pretraining on MNIST classification:
 
 ---
 
-## ⚙️ Hyperparameters Used
+## Hyperparameters Used
 
 | Parameter       | Value                  |
 |-----------------|------------------------|
@@ -78,7 +78,7 @@ We evaluated the impact of pretraining on MNIST classification:
 
 ---
 
-## 📈 Results Highlights
+## Results Highlights
 
 - RBM/DBN: Capable of generating coherent characters.
 - DNN: High classification accuracy on MNIST.
