@@ -12,7 +12,7 @@ class DNN(DBN):
 
         self.losses = []        # Stocke l'évolution des erreurs d'entraînement
 
-    def pretrain_DBN(self, nb_epochs, learning_rate, mini_batch_size, X, verbose=False, step=30):
+    def pretrain_DNN(self, nb_epochs, learning_rate, mini_batch_size, X, verbose=False, step=30):
         """Pré-entraînement du DNN couche par couche en utilisant train_DBN.
         Args:
             X (numpy.ndarray): Données d'entrée pour l'entraînement.
@@ -38,7 +38,7 @@ class DNN(DBN):
             X_copy = rbm.entree_sortie_RBM(X_copy)
             outputs.append(X_copy)
 
-        outputs.append(self.calcul_softmax(X_copy, self.classif_layer[-1]))
+        outputs.append(self.calcul_softmax(outputs[-1], self.RBM_layers[-1]))
 
         return outputs
     

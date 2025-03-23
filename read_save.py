@@ -100,3 +100,10 @@ def save_model(filename: str, model):
     """
     with open("models/"+filename, "wb") as file:
         pickle.dump(model, file)
+
+def sub_data_set(X, y, nb_data=None):
+    if nb_data is None:
+        return X, y
+    else:
+        indexes = np.random.permutation(X.shape[0])
+        return X[indexes[:nb_data]], y[indexes[:nb_data]]
