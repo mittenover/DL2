@@ -27,13 +27,12 @@ This project focuses on the implementation and analysis of deep neural network a
 ## Repository Structure
 
 📁 DL2/
-principal_RBM_alpha_coherent.py      # RBM class for Binary AlphaDigits
-principal_DBN_alpha.py               # DBN built from stacked RBMs
-principal_DNN_MNIST.py               # Supervised DNN with/without pretraining
-explo_paupau.ipynb                   # Notebook for Binary AlphaDigits exploration
-explo_paupau_MNIST_last.ipynb        # Notebook for MNIST exploration
-README.md 
-
+- principal_RBM_alpha_coherent.py      # RBM class for Binary AlphaDigits
+- principal_DBN_alpha.py               # DBN built from stacked RBMs
+- principal_DNN_MNIST.py               # Supervised DNN with/without pretraining
+- explo_paupau.ipynb                   # Notebook for Binary AlphaDigits exploration
+- explo_paupau_MNIST_last.ipynb        # Notebook for MNIST exploration
+- README.md 
 
 ---
 
